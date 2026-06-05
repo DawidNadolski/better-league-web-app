@@ -6,13 +6,15 @@ import authModule from './auth/index.js';
 import betsModule from './bets/index.js';
 import teamsModule from './teams/index.js';
 import rankingModule from './ranking/index.js';
+import adminModule from './admin/index.js';
 
 const store = createStore({
     modules: {
         auth: authModule,
         bets: betsModule,
         ranking: rankingModule,
-        teams: teamsModule
+        teams: teamsModule,
+        admin: adminModule,
     }
 });
 

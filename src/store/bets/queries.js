@@ -13,11 +13,13 @@ export default {
                 homeTeam {
                     id
                     name
+                    countryCode
                 }
                 homeTeamGoals
                 awayTeam {
                     id
                     name
+                    countryCode
                 }
                 awayTeamGoals
                 startDate
@@ -35,10 +37,12 @@ export default {
                     id
                     homeTeam {
                         name
+                        countryCode
                     }
                     homeTeamGoals
                     awayTeam {
                         name
+                        countryCode
                     }
                     awayTeamGoals
                     startDate

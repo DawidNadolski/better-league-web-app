@@ -1,10 +1,11 @@
 export default {
     getTeamsQuery: `
-        query GetTeams {
-            teams {
+        query GetTeams($tournament: String) {
+            teams(tournament: $tournament) {
                 id
                 name
                 group
+                countryCode
             }
         }
     `,
@@ -16,6 +17,8 @@ export default {
                 winningTeam {
                     id
                     name
+                    tournament
+                    countryCode
                 }
             }
         }
@@ -26,6 +29,11 @@ export default {
                 id
                 name
             }
+        }
+    `,
+    tournamentHasStartedQuery: `
+        query TournamentHasStarted($tournament: String) {
+            tournamentHasStarted(tournament: $tournament)
         }
     `
 }

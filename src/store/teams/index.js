@@ -6,7 +6,8 @@ export default {
     state() {
         return {
             teams: [],
-            userWinningTeam: null
+            userWinningTeam: null,
+            winnerPickLocked: false,
         };
     },
     mutations,

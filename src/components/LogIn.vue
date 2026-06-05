@@ -2,26 +2,32 @@
     <base-dialog :show="!!error" title="Wystąpił błąd!" @close="handleError">
       <p>{{ error }}</p>
     </base-dialog>
-    <base-dialog :show="!!error" title="Wystąpił błąd!" @close="handleError">
-        <p>{{ error }}</p>
-    </base-dialog>
-    <h1>Logowanie</h1>
     <base-dialog :show="isLoading" title="Uwierzytelnianie..." fixed>
         <base-spinner></base-spinner>
     </base-dialog>
-    <div>
-        <div class="form-control">
-          <label for="username">Username</label>
-          <input type="username" id="username" v-model.trim="username" />
+    <div class="page">
+        <div class="page-header">
+            <h1>Logowanie</h1>
+            <p class="subtitle">Wróć do typowania meczów</p>
         </div>
-        <div class="form-control">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model.trim="password" />
+        <div class="card form-card">
+            <div class="form-control">
+              <label for="username">Nick</label>
+              <input type="text" id="username" v-model.trim="username" autocomplete="username" />
+            </div>
+            <div class="form-control">
+              <label for="password">Hasło</label>
+              <input type="password" id="password" v-model.trim="password" autocomplete="current-password" />
+            </div>
+            <p v-if="!!validationError" class="validation-error">
+                {{ validationError }}
+            </p>
+            <button class="btn btn-primary form-submit" @click="submitLogin">Zaloguj się</button>
+            <p class="form-footer">
+                Nie masz konta?
+                <router-link to="/signup">Zarejestruj się</router-link>
+            </p>
         </div>
-        <p v-if="!!validationError" class="validationError">
-            {{ validationError }}
-        </p>
-        <button @click="submitLogin">Submit</button>
     </div>
 </template>
 
@@ -70,8 +76,26 @@ export default {
 }
 </script>
 
-<style scoped> 
-p.validationError {
-    color: red;
+<style scoped>
+.form-submit {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.form-footer {
+    margin: 1.25rem 0 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.form-footer a {
+    color: var(--color-primary-mid);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
 }
 </style>

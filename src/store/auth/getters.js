@@ -8,4 +8,10 @@ export default {
     isAuthenticated(state) {
         return !!state.token;
     },
+    userName(state) {
+        return state.userName;
+    },
+    isAdmin(state) {
+        return state.isAdmin;
+    },
 }

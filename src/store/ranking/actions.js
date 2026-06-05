@@ -2,9 +2,10 @@ import queries from './queries'
 import { graphqlFetch } from '@/config/api';
 
 export default {
-    async fetchUserData(context) {
+    async fetchUserData(context, tournament = null) {
         const usersQuery = {
-            query: queries.getUsersQuery
+            query: queries.getUsersQuery,
+            variables: { tournament }
         }
         const response = await graphqlFetch(usersQuery);
         const usersResponseData = await response.json();
@@ -14,7 +15,6 @@ export default {
         }
 
         const users = usersResponseData.data.users;
-        console.log(users)
         const usersData = []
         for (const user of users) {
             let exactResults = 0
@@ -33,12 +33,16 @@ export default {
                     points += bet.points;
                 }
             }
+            points += user.winnerPoints ?? 0;
             usersData.push({
                 userName: user.name,
                 exactResults: exactResults,
                 correctResults: correctResults,
                 wrongResults: wrongResults,
-                points: points
+                points: points,
+                winningTeamName: user.winningTeam?.name ?? null,
+                winningTeamCountryCode: user.winningTeam?.countryCode ?? null,
+                pickedWinner: (user.winnerPoints ?? 0) > 0,
             })
         }
         usersData.sort(function(u1, u2) {

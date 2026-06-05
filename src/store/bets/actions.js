@@ -1,5 +1,6 @@
 import queries from './queries'
 import { graphqlFetch } from '@/config/api';
+import { formatMatchDate } from '@/utils/formatMatchDate';
 
 export default {
     async placeBet(context, payload) {
@@ -90,46 +91,35 @@ export default {
                 userBets.push({
                     id: match.id,
                     homeTeamName: match.homeTeam.name,
+                    homeTeamCountryCode: match.homeTeam.countryCode,
                     homeTeamGoals: match.homeTeamGoals,
                     betHomeTeamGoals: betHomeTeamGoals,
                     awayTeamName: match.awayTeam.name,
+                    awayTeamCountryCode: match.awayTeam.countryCode,
                     awayTeamGoals: match.awayTeamGoals,
                     betAwayTeamGoals: betAwayTeamGoals,
                     state: state,
-                    startDate: formatDate(date),
+                    startDate: formatMatchDate(date),
                 })
             }
         }
-        userBets.sort((a, b) => {
-            return a.startDate - b.startDate
-        })
 
         for (const bet of resolvedBets) {
-            const date = new Date(bet.match.startDate)
             resolvedUserBets.push({
                 id: bet.match.id,
                 homeTeamName: bet.match.homeTeam.name,
+                homeTeamCountryCode: bet.match.homeTeam.countryCode,
                 homeTeamGoals: bet.match.homeTeamGoals,
                 betHomeTeamGoals: bet.homeTeamGoals,
                 awayTeamName: bet.match.awayTeam.name,
+                awayTeamCountryCode: bet.match.awayTeam.countryCode,
                 awayTeamGoals: bet.match.awayTeamGoals,
                 betAwayTeamGoals: bet.awayTeamGoals,
-                startDate: date.toDateString(),
+                startDate: formatMatchDate(bet.match.startDate),
                 points: bet.points
             })
         }
         context.commit('setUserBets', userBets);
         context.commit('setResolvedUserBets', resolvedUserBets);
     }
-}
-
-function formatDate(date) {
-    const options = {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-    };
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    return date.toLocaleDateString('pl-PL', options) + " " + hours + ":" + minutes;
 }

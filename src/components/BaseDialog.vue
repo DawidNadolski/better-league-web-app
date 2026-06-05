@@ -77,10 +77,10 @@
   }
   
   header {
-    background-color: #3a0061;
+    background: linear-gradient(120deg, var(--color-primary-dark) 0%, var(--color-primary-mid) 100%);
     color: white;
     width: 100%;
-    padding: 1rem;
+    padding: 1rem 1.25rem;
   }
   
   header h2 {
@@ -96,6 +96,17 @@
     display: flex;
     justify-content: flex-end;
     margin: 0;
+  }
+
+  menu button {
+    font-family: inherit;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--color-primary-mid) 0%, var(--color-primary) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
   }
   
   .dialog-enter-from,

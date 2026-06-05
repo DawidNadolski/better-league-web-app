@@ -4,5 +4,8 @@ export default {
     },
     userTeam(state) {
         return state.userWinningTeam
+    },
+    winnerPickLocked(state) {
+        return state.winnerPickLocked
     }
 }

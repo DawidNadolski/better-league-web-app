@@ -9,6 +9,8 @@ export default {
                     logIn(input: $input) {
                         token
                         userId
+                        userName
+                        isAdmin
                     }
                 }   
             `,
@@ -32,10 +34,14 @@ export default {
 
         localStorage.setItem('token', responseData.data.logIn.token);
         localStorage.setItem('userId', responseData.data.logIn.userId);
+        localStorage.setItem('userName', responseData.data.logIn.userName);
+        localStorage.setItem('isAdmin', String(responseData.data.logIn.isAdmin));
 
         context.commit('setUser', {
             userId: responseData.data.logIn.userId,
-            token: responseData.data.logIn.token
+            token: responseData.data.logIn.token,
+            userName: responseData.data.logIn.userName,
+            isAdmin: responseData.data.logIn.isAdmin,
         })
     },
     async signup(_, payload) {
@@ -73,20 +79,28 @@ export default {
     logout(context) {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('isAdmin');
 
         context.commit('setUser', {
             token: null,
-            userId: null
+            userId: null,
+            userName: null,
+            isAdmin: false,
         });
     },
     tryLogin(context) {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
         if (token && userId) {
             context.commit('setUser', {
                 userId: userId,
-                token: token
+                token: token,
+                userName: userName,
+                isAdmin: isAdmin,
             })
         }
     }

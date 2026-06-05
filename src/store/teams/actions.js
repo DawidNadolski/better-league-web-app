@@ -1,10 +1,27 @@
 import queries from './queries'
 import { graphqlFetch } from '@/config/api';
+import { TOURNAMENTS } from '@/config/tournaments';
+
+const GROUP_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+
+function groupTeams(teams) {
+    const byGroup = {};
+    for (const team of teams) {
+        if (!byGroup[team.group]) {
+            byGroup[team.group] = [];
+        }
+        byGroup[team.group].push(team);
+    }
+    return GROUP_ORDER
+        .filter((group) => byGroup[group])
+        .map((group) => ({ group, teams: byGroup[group] }));
+}
 
 export default {
     async getTeams(context) {
         const teamsQuery = {
-            query: queries.getTeamsQuery
+            query: queries.getTeamsQuery,
+            variables: { tournament: TOURNAMENTS.WC2026 }
         }
         const response = await graphqlFetch(teamsQuery);
         const teamsResponseData = await response.json();
@@ -13,17 +30,21 @@ export default {
             throw error;
         }
         const teams = teamsResponseData.data.teams;
-        console.log(teams)
-        const grouppedTeams = []
-        for (const group of ["A", "B", "C", "D", "E", "F"]) {
-            const groupTeams = teams.filter((team) => team.group === group)
-            grouppedTeams.push({
-                group: group,
-                teams: groupTeams
-            })
-        }
 
-        context.commit('setTeams', grouppedTeams)
+        context.commit('setTeams', groupTeams(teams))
+    },
+    async getWinnerPickStatus(context) {
+        const query = {
+            query: queries.tournamentHasStartedQuery,
+            variables: { tournament: TOURNAMENTS.WC2026 }
+        }
+        const response = await graphqlFetch(query);
+        const responseData = await response.json();
+        if (responseData.errors) {
+            const error = new Error(responseData.errors[0].message)
+            throw error;
+        }
+        context.commit('setWinnerPickLocked', responseData.data.tournamentHasStarted)
     },
     async getUserTeam(context, userId) {
         const userQuery = {
@@ -39,8 +60,13 @@ export default {
             throw error;
         }
         const user = userResponseData.data.getUser;
+        const winningTeam = user.winningTeam;
 
-        context.commit('setUserTeam', user.winningTeam.id)
+        if (winningTeam && winningTeam.tournament === TOURNAMENTS.WC2026) {
+            context.commit('setUserTeam', winningTeam.id)
+        } else {
+            context.commit('setUserTeam', null)
+        }
     },
     async updateUserTeam(context, teamId) {
         const token = context.getters.token;
@@ -57,7 +83,9 @@ export default {
         }
         const response = await graphqlFetch(updateUserTeamMutation, token);
         const responseData = await response.json();
-        const user = responseData.data.updateUserTeam;
-        console.log(user)
+        if (responseData.errors) {
+            throw new Error(responseData.errors[0].message)
+        }
+        context.commit('setUserTeam', teamId)
     }
 }

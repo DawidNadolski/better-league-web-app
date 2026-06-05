@@ -1,7 +1,7 @@
 export default {
     getUsersQuery: `
-        query GetUsers {
-            users {
+        query GetUsers($tournament: String) {
+            users(tournament: $tournament) {
                 id
                 name
                 bets {
@@ -9,6 +9,12 @@ export default {
                     isResolved
                     points
                 }
+                winningTeam {
+                    id
+                    name
+                    countryCode
+                }
+                winnerPoints
             }
         }
     `

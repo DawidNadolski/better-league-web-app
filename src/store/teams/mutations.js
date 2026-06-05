@@ -4,5 +4,8 @@ export default {
     },
     setUserTeam(state, payload) {
         state.userWinningTeam = payload
+    },
+    setWinnerPickLocked(state, payload) {
+        state.winnerPickLocked = payload
     }
 }
