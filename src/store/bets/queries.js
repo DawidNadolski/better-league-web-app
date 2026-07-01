@@ -24,6 +24,7 @@ export default {
                 awayTeamGoals
                 startDate
                 hasEnded
+                stage
             }
         }
     `,

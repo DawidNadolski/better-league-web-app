@@ -10,6 +10,7 @@
           <th class="col-stat" title="Dokładne wyniki">🎯</th>
           <th class="col-stat" title="Poprawne wyniki">✓</th>
           <th class="col-stat" title="Błędne wyniki">✗</th>
+          <th class="col-stat" title="Mecze bez typu">—</th>
         </tr>
       </thead>
       <tbody>
@@ -42,6 +43,7 @@
           <td class="col-stat exact">{{ user.exactResults }}</td>
           <td class="col-stat correct">{{ user.correctResults }}</td>
           <td class="col-stat wrong">{{ user.wrongResults }}</td>
+          <td class="col-stat missed">{{ user.missedBets }}</td>
         </tr>
       </tbody>
     </table>
@@ -144,6 +146,7 @@ export default {
 .col-stat.exact { color: var(--color-exact); font-weight: 600; }
 .col-stat.correct { color: var(--color-correct); font-weight: 600; }
 .col-stat.wrong { color: var(--color-wrong); font-weight: 600; }
+.col-stat.missed { color: var(--color-text-muted); font-weight: 600; }
 
 .place-num {
   color: var(--color-text-muted);

@@ -1,7 +1,10 @@
 <template>
     <div class="bet-card card" :class="result">
         <div class="bet-header">
-            <span class="bet-date">{{ userBetData.startDate }}</span>
+            <div class="meta-left">
+                <span class="bet-date">{{ userBetData.startDate }}</span>
+                <span class="match-stage">{{ userBetData.stage }}</span>
+            </div>
             <span class="points-badge" :class="result">+{{ points }} pkt</span>
         </div>
         <div class="score-block">
@@ -19,8 +22,15 @@
                 <strong>{{ userBetData.betHomeTeamGoals }} : {{ userBetData.betAwayTeamGoals }}</strong>
                 <team-name :name="userBetData.awayTeamName" :country-code="userBetData.awayTeamCountryCode" />
             </p>
-            <p v-else class="no-bet">Brak typu</p>
+            <p v-else class="no-bet">brak</p>
         </div>
+        <router-link
+            :to="`/matches/${userBetData.id}`"
+            class="details-btn"
+            :class="`details-btn--${result}`"
+        >
+            Szczegóły
+        </router-link>
     </div>
 </template>
 
@@ -35,6 +45,7 @@ export default {
             return (this.userBetData.betHomeTeamGoals !== null) && (this.userBetData.betAwayTeamGoals !== null)
         },
         result() {
+            if (!this.isBet) return 'no-bet';
             if (this.userBetData.points === 3) return 'exact';
             if (this.userBetData.points === 1) return 'correct';
             return 'wrong';
@@ -67,6 +78,12 @@ export default {
     background: linear-gradient(to right, var(--color-wrong-bg), var(--color-surface));
 }
 
+.bet-card.no-bet {
+    border-left-color: var(--color-border);
+    background: var(--color-surface-2);
+    opacity: 0.92;
+}
+
 .bet-header {
     display: flex;
     justify-content: space-between;
@@ -74,9 +91,21 @@ export default {
     margin-bottom: 1rem;
 }
 
+.meta-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .bet-date {
     font-size: 0.8125rem;
     color: var(--color-text-muted);
+}
+
+.match-stage {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary-mid);
 }
 
 .points-badge {
@@ -89,6 +118,7 @@ export default {
 .points-badge.exact { background: var(--color-exact-bg); color: var(--color-exact); }
 .points-badge.correct { background: var(--color-correct-bg); color: var(--color-correct); }
 .points-badge.wrong { background: var(--color-wrong-bg); color: var(--color-wrong); }
+.points-badge.no-bet { background: var(--color-border-light); color: var(--color-text-muted); }
 
 .score-block {
     margin-bottom: 0.75rem;
@@ -133,5 +163,9 @@ export default {
     margin: 0;
     color: var(--color-text-muted);
     font-style: italic;
+}
+
+.bet-card .details-btn {
+    margin-top: 1rem;
 }
 </style>

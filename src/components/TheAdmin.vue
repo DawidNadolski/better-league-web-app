@@ -199,6 +199,103 @@
                 </button>
             </form>
         </section>
+
+        <section class="admin-section card">
+            <h2 class="section-title">Dodaj typ użytkownika</h2>
+            <p class="section-hint">Dla zaległych typów z wiadomości — mecz rozstrzygnięty zostanie od razu przeliczony.</p>
+            <form class="bet-form" @submit.prevent="submitUserBet">
+                <div class="form-row">
+                    <div class="form-control">
+                        <label for="bet-user">Użytkownik</label>
+                        <select id="bet-user" v-model="userBet.userId" required>
+                            <option disabled value="">Wybierz użytkownika</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">
+                                {{ user.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label for="bet-match">Mecz</label>
+                        <select id="bet-match" v-model="userBet.matchId" required>
+                            <option disabled value="">Wybierz mecz</option>
+                            <option
+                                v-for="match in matchOptions"
+                                :key="match.id"
+                                :value="match.id"
+                            >
+                                {{ matchLabel(match) }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row bet-score-row">
+                    <div class="form-control">
+                        <label for="bet-home">Gole gospodarzy</label>
+                        <input
+                            id="bet-home"
+                            v-model.number="userBet.homeTeamGoals"
+                            type="number"
+                            min="0"
+                            required
+                        />
+                    </div>
+                    <div class="form-control">
+                        <label for="bet-away">Gole gości</label>
+                        <input
+                            id="bet-away"
+                            v-model.number="userBet.awayTeamGoals"
+                            type="number"
+                            min="0"
+                            required
+                        />
+                    </div>
+                </div>
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    :disabled="isSaving || !userBet.userId || !userBet.matchId"
+                >
+                    Zapisz typ
+                </button>
+                <p v-if="userBetSuccess" class="success-message">{{ userBetSuccess }}</p>
+            </form>
+        </section>
+
+        <section class="admin-section card">
+            <h2 class="section-title">Hasło użytkownika</h2>
+            <form class="password-form" @submit.prevent="submitPasswordReset">
+                <div class="form-row">
+                    <div class="form-control">
+                        <label for="password-user">Użytkownik</label>
+                        <select id="password-user" v-model="passwordReset.userId" required>
+                            <option disabled value="">Wybierz użytkownika</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">
+                                {{ user.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label for="new-password">Nowe hasło</label>
+                        <input
+                            id="new-password"
+                            v-model="passwordReset.password"
+                            type="text"
+                            autocomplete="new-password"
+                            required
+                            minlength="4"
+                        />
+                    </div>
+                </div>
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                    :disabled="isSaving || !passwordReset.userId || !passwordReset.password"
+                >
+                    Ustaw hasło
+                </button>
+                <p v-if="passwordResetSuccess" class="success-message">{{ passwordResetSuccess }}</p>
+            </form>
+        </section>
     </div>
 </template>
 
@@ -240,6 +337,18 @@ export default {
             },
             resultScores: {},
             winnerTeamId: '',
+            passwordReset: {
+                userId: '',
+                password: '',
+            },
+            passwordResetSuccess: null,
+            userBet: {
+                userId: '',
+                matchId: '',
+                homeTeamGoals: 0,
+                awayTeamGoals: 0,
+            },
+            userBetSuccess: null,
         };
     },
     computed: {
@@ -254,6 +363,14 @@ export default {
         },
         tournamentWinner() {
             return this.$store.getters['admin/tournamentWinner'];
+        },
+        users() {
+            return this.$store.getters['admin/adminUsers'];
+        },
+        matchOptions() {
+            return [...this.$store.getters['admin/adminMatches']].sort(
+                (a, b) => new Date(b.startDate) - new Date(a.startDate)
+            );
         },
         selectedStage() {
             if (this.stageSelection === CUSTOM_STAGE_VALUE) {
@@ -287,6 +404,12 @@ export default {
     methods: {
         formatDate(isoDate) {
             return formatMatchDate(isoDate);
+        },
+        matchLabel(match) {
+            const result = match.hasEnded
+                ? `${match.homeTeamGoals}:${match.awayTeamGoals}`
+                : 'nadchodzący';
+            return `${match.homeTeam.name} – ${match.awayTeam.name} · ${match.stage} · ${this.formatDate(match.startDate)} (${result})`;
         },
         async submitCreateMatch() {
             this.isSaving = true;
@@ -339,6 +462,43 @@ export default {
             }
             this.isSaving = false;
         },
+        async submitPasswordReset() {
+            this.isSaving = true;
+            this.error = null;
+            this.passwordResetSuccess = null;
+            try {
+                const user = await this.$store.dispatch('admin/resetUserPassword', {
+                    userId: this.passwordReset.userId,
+                    password: this.passwordReset.password,
+                });
+                this.passwordResetSuccess = `Hasło użytkownika ${user.name} zostało zmienione.`;
+                this.passwordReset.password = '';
+            } catch (err) {
+                this.error = err.message || String(err);
+            }
+            this.isSaving = false;
+        },
+        async submitUserBet() {
+            this.isSaving = true;
+            this.error = null;
+            this.userBetSuccess = null;
+            try {
+                const bet = await this.$store.dispatch('admin/placeUserBet', {
+                    userId: this.userBet.userId,
+                    matchId: this.userBet.matchId,
+                    homeTeamGoals: this.userBet.homeTeamGoals,
+                    awayTeamGoals: this.userBet.awayTeamGoals,
+                });
+                const user = this.users.find((u) => u.id === this.userBet.userId);
+                const pointsInfo = bet.isResolved ? ` · ${bet.points} pkt` : '';
+                this.userBetSuccess = `Typ ${this.userBet.homeTeamGoals}:${this.userBet.awayTeamGoals} zapisany dla ${user?.name ?? 'użytkownika'}${pointsInfo}.`;
+                this.userBet.homeTeamGoals = 0;
+                this.userBet.awayTeamGoals = 0;
+            } catch (err) {
+                this.error = err.message || String(err);
+            }
+            this.isSaving = false;
+        },
     },
     async mounted() {
         if (!this.$store.getters.isAdmin) {
@@ -348,7 +508,10 @@ export default {
 
         this.isLoading = true;
         try {
-            await this.$store.dispatch('admin/fetchAdminData');
+            await Promise.all([
+                this.$store.dispatch('admin/fetchAdminData'),
+                this.$store.dispatch('admin/fetchAdminUsers'),
+            ]);
         } catch (err) {
             this.error = err.message || String(err);
         }
@@ -364,10 +527,22 @@ export default {
 }
 
 .admin-form,
-.winner-form {
+.winner-form,
+.password-form,
+.bet-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.section-hint {
+    margin: -0.5rem 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.bet-score-row {
+    max-width: 20rem;
 }
 
 .form-row {
@@ -483,5 +658,12 @@ export default {
     gap: 0.5rem;
     margin: 0 0 1rem;
     font-weight: 500;
+}
+
+.success-message {
+    margin: 0;
+    color: var(--color-exact);
+    font-weight: 600;
+    font-size: 0.9375rem;
 }
 </style>

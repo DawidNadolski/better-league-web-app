@@ -9,6 +9,7 @@ import TheRanking from './components/TheRanking.vue'
 import TheEuro2024Ranking from './components/TheEuro2024Ranking.vue'
 import TheRules from './components/TheRules.vue'
 import TheAdmin from './components/TheAdmin.vue'
+import MatchDetails from './components/MatchDetails.vue'
 import { createRouter, createWebHistory } from 'vue-router';
 import store from './store/index.js';
 
@@ -17,6 +18,15 @@ const router = createRouter({
     routes: [
       { path: '/', redirect: '/ranking' },
       { path: '/matches', component: AllMatches },
+      {
+        path: '/matches/:matchId',
+        component: MatchDetails,
+        beforeEnter() {
+          if (!store.getters.isAuthenticated) {
+            return '/login';
+          }
+        },
+      },
       { path: '/ranking', component: TheRanking },
       { path: '/zasady', component: TheRules },
       { path: '/euro-2024', component: TheEuro2024Ranking },

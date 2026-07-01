@@ -32,6 +32,12 @@ export default {
         context.commit('updateUserBet', payload)
     },
     async getMatchesAndBets(context, userId) {
+        if (!userId) {
+            context.commit('setUserBets', []);
+            context.commit('setResolvedUserBets', []);
+            return;
+        }
+
         // Fetching matches
         const matchesQuery = {
             query: queries.getMatchesQuery,
@@ -70,9 +76,14 @@ export default {
             const match2StartDate = new Date(match2.startDate)
             return match1StartDate - match2StartDate
         })
-        const resolvedBets = bets.filter((bet) => bet.isResolved )
+        const endedMatches = matches.filter((match) => match.hasEnded)
+        endedMatches.sort(
+            (a, b) => new Date(b.startDate) - new Date(a.startDate)
+        )
         for (const match of activeMatches) {
-            const matchBet = bets.find((bet) => bet.match.id === match.id);
+            const matchBet = bets.find(
+                (bet) => bet.match && String(bet.match.id) === String(match.id)
+            );
             let betHomeTeamGoals = null
             let betAwayTeamGoals = null
             let state = null
@@ -100,23 +111,28 @@ export default {
                     betAwayTeamGoals: betAwayTeamGoals,
                     state: state,
                     startDate: formatMatchDate(date),
+                    stage: match.stage,
                 })
             }
         }
 
-        for (const bet of resolvedBets) {
+        for (const match of endedMatches) {
+            const matchBet = bets.find(
+                (bet) => bet.match && String(bet.match.id) === String(match.id)
+            );
             resolvedUserBets.push({
-                id: bet.match.id,
-                homeTeamName: bet.match.homeTeam.name,
-                homeTeamCountryCode: bet.match.homeTeam.countryCode,
-                homeTeamGoals: bet.match.homeTeamGoals,
-                betHomeTeamGoals: bet.homeTeamGoals,
-                awayTeamName: bet.match.awayTeam.name,
-                awayTeamCountryCode: bet.match.awayTeam.countryCode,
-                awayTeamGoals: bet.match.awayTeamGoals,
-                betAwayTeamGoals: bet.awayTeamGoals,
-                startDate: formatMatchDate(bet.match.startDate),
-                points: bet.points
+                id: match.id,
+                homeTeamName: match.homeTeam.name,
+                homeTeamCountryCode: match.homeTeam.countryCode,
+                homeTeamGoals: match.homeTeamGoals,
+                betHomeTeamGoals: matchBet ? matchBet.homeTeamGoals : null,
+                awayTeamName: match.awayTeam.name,
+                awayTeamCountryCode: match.awayTeam.countryCode,
+                awayTeamGoals: match.awayTeamGoals,
+                betAwayTeamGoals: matchBet ? matchBet.awayTeamGoals : null,
+                startDate: formatMatchDate(new Date(match.startDate)),
+                stage: match.stage,
+                points: matchBet ? matchBet.points : 0,
             })
         }
         context.commit('setUserBets', userBets);

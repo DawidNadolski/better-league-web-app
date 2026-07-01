@@ -54,6 +54,9 @@ export default {
     };
   },
   computed: {
+    userId() {
+      return this.$store.getters.userId;
+    },
     userBets() {
       return this.$store.getters.userBets;
     },
@@ -61,21 +64,33 @@ export default {
       return this.$store.getters.resolvedUserBets;
     },
   },
+  watch: {
+    userId: {
+      async handler(newUserId, oldUserId) {
+        if (newUserId && oldUserId && newUserId !== oldUserId) {
+          await this.loadMatches(newUserId);
+        }
+      },
+    },
+  },
   methods: {
     handleError() {
       this.error = null;
       this.$router.replace("/ranking");
     },
+    async loadMatches(userId) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await this.$store.dispatch("getMatchesAndBets", userId);
+      } catch (error) {
+        this.error = error;
+      }
+      this.isLoading = false;
+    },
   },
   async mounted() {
-    this.isLoading = true;
-    const userId = this.$store.getters.userId;
-    try {
-      await this.$store.dispatch("getMatchesAndBets", userId);
-    } catch (error) {
-      this.error = error;
-    }
-    this.isLoading = false;
+    await this.loadMatches(this.userId);
   },
 };
 </script>

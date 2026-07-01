@@ -37,6 +37,10 @@ export default {
         localStorage.setItem('userName', responseData.data.logIn.userName);
         localStorage.setItem('isAdmin', String(responseData.data.logIn.isAdmin));
 
+        context.commit('setUserBets', []);
+        context.commit('setResolvedUserBets', []);
+        context.commit('setUserTeam', null);
+
         context.commit('setUser', {
             userId: responseData.data.logIn.userId,
             token: responseData.data.logIn.token,
@@ -88,6 +92,14 @@ export default {
             userName: null,
             isAdmin: false,
         });
+
+        context.commit('setUserBets', []);
+        context.commit('setResolvedUserBets', []);
+        context.commit('setUserTeam', null);
+        context.commit('setWinnerPickLocked', false);
+        context.commit('admin/setMatches', [], { root: true });
+        context.commit('admin/setTeams', [], { root: true });
+        context.commit('admin/setUsers', [], { root: true });
     },
     tryLogin(context) {
         const token = localStorage.getItem('token');

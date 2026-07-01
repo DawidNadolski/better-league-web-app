@@ -7,6 +7,7 @@ import betsModule from './bets/index.js';
 import teamsModule from './teams/index.js';
 import rankingModule from './ranking/index.js';
 import adminModule from './admin/index.js';
+import matchModule from './match/index.js';
 
 const store = createStore({
     modules: {
@@ -15,6 +16,7 @@ const store = createStore({
         ranking: rankingModule,
         teams: teamsModule,
         admin: adminModule,
+        match: matchModule,
     }
 });
 

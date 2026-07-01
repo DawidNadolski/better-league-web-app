@@ -5,6 +5,9 @@ export default {
     adminTeams(state) {
         return state.teams;
     },
+    adminUsers(state) {
+        return state.users;
+    },
     unresolvedMatches(state) {
         return state.matches.filter((match) => !match.hasEnded);
     },

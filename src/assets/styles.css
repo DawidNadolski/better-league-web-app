@@ -173,6 +173,71 @@ body {
   background: rgba(255, 255, 255, 0.18);
 }
 
+.details-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 999px;
+  border: 2px solid;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.details-btn:active {
+  transform: scale(0.98);
+}
+
+.details-btn--exact {
+  border-color: var(--color-exact);
+  color: var(--color-exact);
+  background: rgba(5, 150, 105, 0.08);
+}
+
+.details-btn--exact:hover {
+  background: var(--color-exact-bg);
+  color: var(--color-exact);
+}
+
+.details-btn--correct {
+  border-color: var(--color-correct);
+  color: var(--color-correct);
+  background: rgba(217, 119, 6, 0.08);
+}
+
+.details-btn--correct:hover {
+  background: var(--color-correct-bg);
+  color: var(--color-correct);
+}
+
+.details-btn--wrong {
+  border-color: var(--color-wrong);
+  color: var(--color-wrong);
+  background: rgba(225, 29, 72, 0.08);
+}
+
+.details-btn--wrong:hover {
+  background: var(--color-wrong-bg);
+  color: var(--color-wrong);
+}
+
+.details-btn--no-bet {
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+}
+
+.details-btn--no-bet:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-muted);
+}
+
 .form-card {
   width: min(100%, 24rem);
   margin: 0 auto;

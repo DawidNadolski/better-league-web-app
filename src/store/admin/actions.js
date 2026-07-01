@@ -48,6 +48,20 @@ export default {
         context.commit('setTeams', teams);
     },
 
+    async fetchAdminUsers(context) {
+        const token = context.rootGetters.token;
+        const response = await graphqlFetch({
+            query: queries.adminUsersQuery,
+        }, token);
+
+        const responseData = await response.json();
+        if (responseData.errors) {
+            throw new Error(responseData.errors[0].message);
+        }
+
+        context.commit('setUsers', responseData.data.adminUsers);
+    },
+
     async createMatch(context, payload) {
         const token = context.rootGetters.token;
         const response = await graphqlFetch({
@@ -104,5 +118,47 @@ export default {
         }
 
         await context.dispatch('fetchAdminData');
+    },
+
+    async resetUserPassword(context, payload) {
+        const token = context.rootGetters.token;
+        const response = await graphqlFetch({
+            query: queries.adminResetUserPasswordMutation,
+            variables: {
+                input: {
+                    userId: payload.userId,
+                    password: payload.password,
+                },
+            },
+        }, token);
+
+        const responseData = await response.json();
+        if (responseData.errors) {
+            throw new Error(responseData.errors[0].message);
+        }
+
+        return responseData.data.adminResetUserPassword;
+    },
+
+    async placeUserBet(context, payload) {
+        const token = context.rootGetters.token;
+        const response = await graphqlFetch({
+            query: queries.adminPlaceUserBetMutation,
+            variables: {
+                input: {
+                    userId: payload.userId,
+                    matchId: payload.matchId,
+                    homeTeamGoals: payload.homeTeamGoals,
+                    awayTeamGoals: payload.awayTeamGoals,
+                },
+            },
+        }, token);
+
+        const responseData = await response.json();
+        if (responseData.errors) {
+            throw new Error(responseData.errors[0].message);
+        }
+
+        return responseData.data.adminPlaceUserBet;
     },
 };

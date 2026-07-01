@@ -43,6 +43,7 @@ export default {
                 winningTeamName: user.winningTeam?.name ?? null,
                 winningTeamCountryCode: user.winningTeam?.countryCode ?? null,
                 pickedWinner: (user.winnerPoints ?? 0) > 0,
+                missedBets: user.missedBets ?? 0,
             })
         }
         usersData.sort(function(u1, u2) {

@@ -7,7 +7,10 @@
     </base-dialog>
     <div class="match-card card" :class="{ live: isActive }">
         <div class="match-meta">
-            <span class="match-date">{{ userBetData.startDate }}</span>
+            <div class="meta-left">
+                <span class="match-date">{{ userBetData.startDate }}</span>
+                <span class="match-stage">{{ userBetData.stage }}</span>
+            </div>
             <span v-if="isActive" class="live-badge">LIVE</span>
         </div>
         <div class="match-scoreline">
@@ -113,10 +116,22 @@ export default {
     margin-bottom: 1rem;
 }
 
+.meta-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .match-date {
     font-size: 0.8125rem;
     color: var(--color-text-muted);
     font-weight: 500;
+}
+
+.match-stage {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary-mid);
 }
 
 .live-badge {

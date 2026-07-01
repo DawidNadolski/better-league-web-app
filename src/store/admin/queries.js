@@ -62,4 +62,31 @@ export default {
             }
         }
     `,
+    adminUsersQuery: `
+        query AdminUsers {
+            adminUsers {
+                id
+                name
+            }
+        }
+    `,
+    adminResetUserPasswordMutation: `
+        mutation AdminResetUserPassword($input: AdminResetPasswordInput!) {
+            adminResetUserPassword(input: $input) {
+                id
+                name
+            }
+        }
+    `,
+    adminPlaceUserBetMutation: `
+        mutation AdminPlaceUserBet($input: AdminPlaceBetInput!) {
+            adminPlaceUserBet(input: $input) {
+                id
+                homeTeamGoals
+                awayTeamGoals
+                isResolved
+                points
+            }
+        }
+    `,
 };

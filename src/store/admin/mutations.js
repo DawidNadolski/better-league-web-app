@@ -5,4 +5,7 @@ export default {
     setTeams(state, payload) {
         state.teams = payload;
     },
+    setUsers(state, payload) {
+        state.users = payload;
+    },
 };
