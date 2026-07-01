@@ -34,6 +34,9 @@
         <li v-if="!isLoggedIn">
           <router-link class="nav-cta" to="/signup">Stwórz konto</router-link>
         </li>
+        <li v-if="isLoggedIn" class="nav-user" :title="userName">
+          <span class="nav-user-name">{{ userName }}</span>
+        </li>
         <li v-if="isLoggedIn">
           <button class="btn btn-ghost" @click="logOut">Wyloguj</button>
         </li>
@@ -50,6 +53,9 @@ export default {
         },
         isAdmin() {
             return this.$store.getters.isAdmin;
+        },
+        userName() {
+            return this.$store.getters.userName;
         }
     },
     methods: {
@@ -187,6 +193,25 @@ export default {
   padding: 0.5rem 0.875rem;
 }
 
+.nav-user {
+  display: flex;
+  align-items: center;
+}
+
+.nav-user-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .logo {
     font-size: 1rem;
@@ -201,6 +226,12 @@ export default {
   .nav-links .btn-ghost {
     font-size: 0.8125rem;
     padding: 0.375rem 0.5rem;
+  }
+
+  .nav-user-name {
+    max-width: 5.5rem;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
   }
 }
 </style>
